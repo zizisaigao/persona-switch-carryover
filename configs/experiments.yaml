@@ -1,0 +1,59 @@
+experiment:
+  default_condition: A_summary_to_B
+  default_persona_a: INTJ
+  default_persona_b: ESFP
+  trials_per_sample: 1
+  random_seed: 42
+
+conditions:
+  A_only:
+    active_persona_stage_2: A
+    use_history: false
+    use_summary: false
+    do_warmup: false
+  B_only:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: false
+    do_warmup: false
+  A_history_to_B:
+    active_persona_stage_2: B
+    use_history: true
+    use_summary: false
+    do_warmup: true
+  A_summary_to_B:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+  Neutral_summary_to_B:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+    warmup_persona_override: NEUTRAL
+
+warmup:
+  turns: 3
+  prompts:
+    - "How do you usually approach a difficult long-term goal?"
+    - "What matters more when making a decision: logic, relationships, or momentum?"
+    - "Describe how you would advise someone who feels stuck."
+
+budget:
+  max_samples_per_run: 10
+  max_total_requests: 100
+  stop_on_error: false
+
+runtime:
+  mock_mode: true
+  use_cache: true
+  resume: true
+  save_messages: true
+
+paths:
+  samples_csv: data/processed/samples_toy.csv
+  raw_generations: outputs/raw_generations/generations.jsonl
+  api_usage_log: outputs/logs/api_usage.jsonl
+  cache_dir: outputs/cache
+  scored_dir: outputs/scored
