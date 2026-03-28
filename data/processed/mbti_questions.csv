@@ -1,0 +1,94 @@
+question_id,section,prompt_zh,option_a_zh,option_b_zh,option_a_dimension,option_b_dimension,prompt_en,option_a_en,option_b_en
+1,1,当你要外出一整天，你会,计划你要做什么和在什么时候做,说去就去,J,P,"When you are going out for a whole day, you tend to",plan what you will do and when to do it,just go spontaneously
+2,1,你认为自己是一个,较为随兴所至的人,较为有条理的人,P,J,You see yourself as,a rather spontaneous person,a rather organized person
+3,1,假如你是一位老师，你会选教,以事实为主的课程,涉及理论的课程,S,N,"If you were a teacher, you would prefer to teach",courses based mainly on facts,courses involving theory
+4,1,你通常,与人容易混熟,比较沉静或矜持,E,I,You usually,get familiar with people easily,are more quiet or reserved
+5,1,一般来说，你和哪些人比较合得来,富于想象力的人,现实的人,N,S,"In general, which people do you get along with better?",imaginative people,realistic people
+6,1,你是否经常让,你的情感支配你的理智,你的理智主宰你的情感,F,T,Do you often let,your feelings govern your reason,your reason govern your feelings
+7,1,处理许多事情上，你会喜欢,凭兴趣行事,按照计划行事,P,J,"When handling many things, you prefer to",act according to interest,act according to plan
+8,1,你是否,容易让人了解,难于让人了解,E,I,Are you,easy for others to know,hard for others to know
+9,1,按照程序表做事,会令你心喜,会令你感到束缚,J,P,Following a schedule,pleases you,makes you feel constrained
+10,1,当你有一份特别的任务，你会喜欢,开始前小心组织计划,边做边找该做什么,J,P,"When you have a special task, you prefer to",carefully organize and plan before starting,figure out what to do as you go
+11,1,在大多数情况下，你会选择,顺其自然,按程序表做事,P,J,"In most situations, you would choose to",let things unfold naturally,follow a schedule
+12,1,大多数人会说你是一个,重视自我隐私的人,非常坦率开放的人,I,E,Most people would say you are,someone who values personal privacy,someone very frank and open
+13,1,你宁愿被人认为是一个,实事求是的人,机灵的人,S,N,You would rather be seen as,a practical person,a clever/ingenious person
+14,1,在一大群人当中，通常是,你介绍大家认识,别人介绍你,E,I,"In a large group, it is usually",you who introduce people to one another,others who introduce you
+15,1,你会跟哪些人做朋友,常提出新注意的人,脚踏实地的人,N,S,Which kind of people would you befriend?,people who often come up with new ideas,down-to-earth people
+16,1,你倾向,重视感情多于逻辑,重视逻辑多于感情,F,T,You tend to,value feelings over logic,value logic over feelings
+17,1,你比较喜欢,坐观事情发展才作计划,很早就作计划,P,J,You prefer to,wait and see how things develop before planning,make plans early
+18,1,你喜欢花很多的时间,一个人独处,合别人在一起,I,E,You like to spend a lot of time,alone,with other people
+19,1,与很多人一起会,令你活力倍增,常常令你心力憔悴,E,I,Being with many people,energizes you,often drains you
+20,1,你比较喜欢,很早便把约会、社交聚集等事情安排妥当,无拘无束，看当时有什么好玩就做什么,J,P,You prefer to,"arrange dates, gatherings, and social events well in advance",stay flexible and do whatever seems fun at the time
+21,1,计划一个旅程时，你较喜欢,大部分的时间都是跟当天的感觉行事,事先知道大部分的日子会做什么,P,J,"When planning a trip, you prefer to",spend most of the time following how you feel that day,know in advance what you will do on most days
+22,1,在社交聚会中，你,有时感到郁闷,常常乐在其中,I,E,"At social gatherings, you",sometimes feel bored or down,usually enjoy yourself
+23,1,你通常,和别人容易混熟,趋向自处一隅,E,I,You usually,mix with others easily,tend to keep to yourself
+24,1,哪些人会更吸引你,一个思想敏捷及非常聪颖的人,实事求是，具丰富常识的人,N,S,Which people attract you more?,someone quick-minded and very intelligent,someone practical with rich common sense
+25,1,在日常工作中，你会,颇为喜欢处理迫使你分秒必争的突发,通常预先计划，以免要在压力下工作,P,J,"In daily work, you would",quite enjoy dealing with urgent surprises that demand immediate response,usually plan ahead to avoid working under pressure
+26,1,你认为别人一般,要花很长时间才认识你,用很短的时间便认识你,I,E,People generally,take a long time to get to know you,get to know you quickly
+27,2,在下列每一对词语中，哪一个词语更合你心意,注重隐私,坦率开放,I,E,"In each pair of words below, which word appeals to you more?",private,open and frank
+28,2,在下列每一对词语中，哪一个词语更合你心意,预先安排的,无计划的,J,P,"In each pair of words below, which word appeals to you more?",prearranged,unplanned
+29,2,在下列每一对词语中，哪一个词语更合你心意,抽象,具体,N,S,"In each pair of words below, which word appeals to you more?",abstract,concrete
+30,2,在下列每一对词语中，哪一个词语更合你心意,温柔,坚定,F,T,"In each pair of words below, which word appeals to you more?",gentle,firm
+31,2,在下列每一对词语中，哪一个词语更合你心意,思考,感受,T,F,"In each pair of words below, which word appeals to you more?",thinking,feeling
+32,2,在下列每一对词语中，哪一个词语更合你心意,事实,意念,S,N,"In each pair of words below, which word appeals to you more?",facts,ideas
+33,2,在下列每一对词语中，哪一个词语更合你心意,冲动,决定,P,J,"In each pair of words below, which word appeals to you more?",impulsive,decisive
+34,2,在下列每一对词语中，哪一个词语更合你心意,热衷,文静,E,I,"In each pair of words below, which word appeals to you more?",enthusiastic,quiet
+35,2,在下列每一对词语中，哪一个词语更合你心意,文静,外向,I,E,"In each pair of words below, which word appeals to you more?",quiet,outgoing
+36,2,在下列每一对词语中，哪一个词语更合你心意,有系统,随意,J,P,"In each pair of words below, which word appeals to you more?",systematic,spontaneous/casual
+37,2,在下列每一对词语中，哪一个词语更合你心意,理论,肯定,N,S,"In each pair of words below, which word appeals to you more?",theoretical,certain/definite
+38,2,在下列每一对词语中，哪一个词语更合你心意,敏感,公正,F,T,"In each pair of words below, which word appeals to you more?",sensitive,fair
+39,2,在下列每一对词语中，哪一个词语更合你心意,令人信服,感人的,T,F,"In each pair of words below, which word appeals to you more?",convincing,touching
+40,2,在下列每一对词语中，哪一个词语更合你心意,声明,概念,S,N,"In each pair of words below, which word appeals to you more?",statement,concept
+41,2,在下列每一对词语中，哪一个词语更合你心意,不受约束,预先安排,P,J,"In each pair of words below, which word appeals to you more?",unrestricted,prearranged
+42,2,在下列每一对词语中，哪一个词语更合你心意,矜持,健谈,I,E,"In each pair of words below, which word appeals to you more?",reserved,talkative
+43,2,在下列每一对词语中，哪一个词语更合你心意,有条不紊,不拘小节,J,P,"In each pair of words below, which word appeals to you more?",orderly,easygoing / unconcerned with details
+44,2,在下列每一对词语中，哪一个词语更合你心意,意念,实况,N,S,"In each pair of words below, which word appeals to you more?",ideas,actuality / reality
+45,2,在下列每一对词语中，哪一个词语更合你心意,同情怜悯,远见,F,T,"In each pair of words below, which word appeals to you more?",sympathy and compassion,foresight
+46,2,在下列每一对词语中，哪一个词语更合你心意,利益,祝福,T,F,"In each pair of words below, which word appeals to you more?",benefit,blessing
+47,2,在下列每一对词语中，哪一个词语更合你心意,务实的,理论的,S,N,"In each pair of words below, which word appeals to you more?",practical,theoretical
+48,2,在下列每一对词语中，哪一个词语更合你心意,朋友不多,朋友众多,I,E,"In each pair of words below, which word appeals to you more?",few friends,many friends
+49,2,在下列每一对词语中，哪一个词语更合你心意,有系统,即兴,J,P,"In each pair of words below, which word appeals to you more?",systematic,improvised
+50,2,在下列每一对词语中，哪一个词语更合你心意,富想象的,以事论事,N,S,"In each pair of words below, which word appeals to you more?",imaginative,deal with things as they are
+51,2,在下列每一对词语中，哪一个词语更合你心意,亲切的,客观的,F,T,"In each pair of words below, which word appeals to you more?",warm / kind,objective
+52,2,在下列每一对词语中，哪一个词语更合你心意,客观的,热情的,T,F,"In each pair of words below, which word appeals to you more?",objective,enthusiastic / warm-hearted
+53,2,在下列每一对词语中，哪一个词语更合你心意,建造,发明,S,N,"In each pair of words below, which word appeals to you more?",build,invent
+54,2,在下列每一对词语中，哪一个词语更合你心意,文静,爱合群,I,E,"In each pair of words below, which word appeals to you more?",quiet,sociable
+55,2,在下列每一对词语中，哪一个词语更合你心意,理论,事实,N,S,"In each pair of words below, which word appeals to you more?",theory,fact
+56,2,在下列每一对词语中，哪一个词语更合你心意,富同情,合逻辑,F,T,"In each pair of words below, which word appeals to you more?",compassionate,logical
+57,2,在下列每一对词语中，哪一个词语更合你心意,具分析力,多愁善感,T,F,"In each pair of words below, which word appeals to you more?",analytical,sentimental
+58,2,在下列每一对词语中，哪一个词语更合你心意,合情合理,令人着迷,S,N,"In each pair of words below, which word appeals to you more?",reasonable / sensible,fascinating
+59,3,当你要在一个星期内完成一个大项目，你在开始的时候会,把要做的不同工作依次列出,马上动工,J,P,"When you need to finish a large project within a week, at the start you would",list the different tasks in order,start working right away
+60,3,在社交场合中，你经常会感到,与某些人很难打开话匣儿和保持对话,与多数人都能从容地长谈,I,E,"In social situations, you often feel",it is hard to start and maintain conversations with certain people,you can talk comfortably at length with most people
+61,3,要做许多人也做的事，你比较喜欢,按照一般认可的方法去做,构想一个自己的想法,S,N,"When doing something many others also do, you prefer to",do it in the generally accepted way,come up with your own idea
+62,3,你刚认识的朋友能否说出你的兴趣,马上可以,要待他们真正了解你之后才可以,E,I,Can friends you have just met tell what your interests are?,"yes, right away",only after they truly get to know you
+63,3,你通常较喜欢的科目是,讲授概念和原则的,讲授事实和数据的,N,S,You usually prefer subjects that,teach concepts and principles,teach facts and data
+64,3,哪个是较高的赞誉，或称许为,一贯感性的人,一贯理性的人,F,T,Which is the higher compliment: being called,a consistently emotional / sensitive person,a consistently rational person
+65,3,你认为按照程序表做事,有时是需要的，但一般来说你不太喜欢这样做,大多数情况下是有帮助而且是你喜欢做的,P,J,You think following a schedule is,"sometimes necessary, but generally not something you like",helpful in most cases and something you like
+66,3,和一群人在一起，你通常会选,跟你很熟悉的个别人谈话,参与大伙的谈话,I,E,"When you are with a group of people, you usually choose to",talk with a few people you know well,join the group conversation
+67,3,在社交聚会上，你会,是说话很多的一个,让别人多说话,E,I,"At social parties, you would",be one of the people who talks a lot,let others do most of the talking
+68,3,把周末期间要完成的事列成清单，这个主意会,合你意,使你提不起劲,J,P,Making a list of things to do over the weekend sounds,appealing to you,demotivating to you
+69,3,哪个是较高的赞誉，或称许为,能干的,富有同情心,T,F,Which is the higher compliment: being called,competent,compassionate
+70,3,你通常喜欢,事先安排你的社交约会,随兴之所至做事,J,P,You usually like to,schedule your social engagements in advance,do things spontaneously
+71,3,总的说来，要做一个大型作业时，你会选,边做边想该做什么,首先把工作按步细分,P,J,"Generally, when doing a large assignment, you would choose to",figure out what to do while doing it,break the work into steps first
+72,3,你能否滔滔不绝地与人聊天,只限于跟你有共同兴趣的人,几乎跟任何人都可以,I,E,Can you talk at length with people,only when they share your interests,with almost anyone
+73,3,你会,跟随一些证明有效的方法,分析还有什么毛病，及针对尚未解决的难题,S,N,You tend to,follow methods that have proven effective,analyze what is still wrong and address unresolved problems
+74,3,为乐趣而阅读时，你会,喜欢奇特或创新的表达方式,喜欢作者直言直说,N,S,"When reading for pleasure, you prefer",unusual or innovative styles of expression,authors who say things plainly
+75,3,你宁愿替哪一类上司（或者老师）工作,天性淳良，但常常前后不一的,言词尖锐但永远合乎逻辑的,F,T,Which kind of boss (or teacher) would you rather work for?,one who is kind by nature but often inconsistent,one who is sharp-tongued but always logical
+76,3,你做事多数是,按当天心情去做,照拟好的程序表去做,P,J,"Most of the time, you do things",according to your mood that day,according to a planned schedule
+77,3,你是否,可以和任何人按需求从容地交谈,只是对某些人或在某种情况下才可以畅所欲言,E,I,Are you,able to converse easily with anyone as needed,able to speak freely only with certain people or in certain situations
+78,3,要作决定时，你认为比较重要的是,据事实衡量,考虑他人的感受和意见,T,F,"When making decisions, what is more important?",weighing the facts,considering others' feelings and opinions
+79,4,在下列每一对词语中，哪一个词语更合你心意,想象的,真实的,N,S,"In each pair of words below, which word appeals to you more?",imagined / imaginative,real
+80,4,在下列每一对词语中，哪一个词语更合你心意,仁慈慷慨的,意志坚定的,F,T,"In each pair of words below, which word appeals to you more?",kind and generous,strong-willed
+81,4,在下列每一对词语中，哪一个词语更合你心意,公正的,有关怀心,T,F,"In each pair of words below, which word appeals to you more?",fair,caring
+82,4,在下列每一对词语中，哪一个词语更合你心意,制作,设计,S,N,"In each pair of words below, which word appeals to you more?",make / produce,design
+83,4,在下列每一对词语中，哪一个词语更合你心意,可能性,必然性,N,S,"In each pair of words below, which word appeals to you more?",possibility,certainty
+84,4,在下列每一对词语中，哪一个词语更合你心意,温柔,力量,F,T,"In each pair of words below, which word appeals to you more?",gentleness,strength
+85,4,在下列每一对词语中，哪一个词语更合你心意,实际,多愁善感,T,F,"In each pair of words below, which word appeals to you more?",practical,sentimental
+86,4,在下列每一对词语中，哪一个词语更合你心意,制造,创造,S,N,"In each pair of words below, which word appeals to you more?",manufacture,create
+87,4,在下列每一对词语中，哪一个词语更合你心意,新颖的,已知的,N,S,"In each pair of words below, which word appeals to you more?",novel,known
+88,4,在下列每一对词语中，哪一个词语更合你心意,同情,分析,F,T,"In each pair of words below, which word appeals to you more?",sympathy,analysis
+89,4,在下列每一对词语中，哪一个词语更合你心意,坚持己见,温柔有爱心,T,F,"In each pair of words below, which word appeals to you more?",stand one's ground,gentle and loving
+90,4,在下列每一对词语中，哪一个词语更合你心意,具体的,抽象的,S,N,"In each pair of words below, which word appeals to you more?",concrete,abstract
+91,4,在下列每一对词语中，哪一个词语更合你心意,全心投入,有决心的,F,T,"In each pair of words below, which word appeals to you more?",wholehearted,determined
+92,4,在下列每一对词语中，哪一个词语更合你心意,能干,仁慈,T,F,"In each pair of words below, which word appeals to you more?",capable,kind
+93,4,在下列每一对词语中，哪一个词语更合你心意,实际,创新,S,N,"In each pair of words below, which word appeals to you more?",practical,innovative
