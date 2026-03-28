@@ -1,0 +1,10 @@
+tasks:
+  mbti_mcq:
+    description: "Multiple-choice personality-style question with labeled options."
+    response_format: "Answer with the best option label and a short justification."
+  machine_mindset:
+    description: "Open-ended question probing beliefs, framing, or reasoning style."
+    response_format: "Answer in 2-4 sentences."
+  ifeval:
+    description: "Instruction-following sample for later evaluation against constraint satisfaction."
+    response_format: "Follow the instruction exactly."
