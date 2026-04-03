@@ -1,0 +1,109 @@
+{
+  "source_dataset": "pandalla/Machine_Mindset_MBTI_dataset",
+  "languages": [
+    "en"
+  ],
+  "include_self_awareness": true,
+  "include_dimension_files": true,
+  "file_count": 24,
+  "row_count": 96678,
+  "output_file": "data\\processed\\machine_mindset_labeled.parquet",
+  "files": [
+    {
+      "filename": "en_ENFJ_self_awareness.json",
+      "row_count": 437
+    },
+    {
+      "filename": "en_ENFP_self_awareness.json",
+      "row_count": 440
+    },
+    {
+      "filename": "en_ENTJ_self_awareness.json",
+      "row_count": 456
+    },
+    {
+      "filename": "en_ENTP_self_awareness.json",
+      "row_count": 422
+    },
+    {
+      "filename": "en_ESFJ_self_awareness.json",
+      "row_count": 448
+    },
+    {
+      "filename": "en_ESFP_self_awareness.json",
+      "row_count": 446
+    },
+    {
+      "filename": "en_ESTJ_self_awareness.json",
+      "row_count": 453
+    },
+    {
+      "filename": "en_ESTP_self_awareness.json",
+      "row_count": 438
+    },
+    {
+      "filename": "en_INFJ_self_awareness.json",
+      "row_count": 423
+    },
+    {
+      "filename": "en_INFP_self_awareness.json",
+      "row_count": 437
+    },
+    {
+      "filename": "en_INTJ_self_awareness.json",
+      "row_count": 438
+    },
+    {
+      "filename": "en_INTP_self_awareness.json",
+      "row_count": 424
+    },
+    {
+      "filename": "en_ISFJ_self_awareness.json",
+      "row_count": 446
+    },
+    {
+      "filename": "en_ISFP_self_awareness.json",
+      "row_count": 439
+    },
+    {
+      "filename": "en_ISTJ_self_awareness.json",
+      "row_count": 446
+    },
+    {
+      "filename": "en_ISTP_self_awareness.json",
+      "row_count": 445
+    },
+    {
+      "filename": "en_decision_feeling.json",
+      "row_count": 12159
+    },
+    {
+      "filename": "en_decision_thinking.json",
+      "row_count": 12159
+    },
+    {
+      "filename": "en_energy_extraversion.json",
+      "row_count": 2050
+    },
+    {
+      "filename": "en_energy_introversion.json",
+      "row_count": 2050
+    },
+    {
+      "filename": "en_execution_judging.json",
+      "row_count": 7378
+    },
+    {
+      "filename": "en_execution_perceiving.json",
+      "row_count": 7378
+    },
+    {
+      "filename": "en_information_intuition.json",
+      "row_count": 23233
+    },
+    {
+      "filename": "en_information_sensing.json",
+      "row_count": 23233
+    }
+  ]
+}

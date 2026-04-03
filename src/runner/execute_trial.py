@@ -32,7 +32,12 @@ def execute_trial(
     trial_id: str,
     save_messages: bool = True,
 ) -> dict[str, Any]:
-    warmup_persona = condition_config.get("warmup_persona_override", persona_a)
+    warmup_persona = _resolve_persona_reference(
+        condition_config.get("warmup_persona_override"),
+        persona_a=persona_a,
+        persona_b=persona_b,
+        default_persona=persona_a,
+    )
     prior_history: list[dict[str, str]] = []
     warmup_history: list[dict[str, str]] = []
     memory_summary: str | None = None
@@ -127,3 +132,19 @@ def make_resume_key(record: dict[str, Any]) -> str:
         },
         sort_keys=True,
     )
+
+
+def _resolve_persona_reference(
+    reference: str | None,
+    *,
+    persona_a: str,
+    persona_b: str,
+    default_persona: str,
+) -> str:
+    if not reference:
+        return default_persona
+    if reference == "A":
+        return persona_a
+    if reference == "B":
+        return persona_b
+    return reference

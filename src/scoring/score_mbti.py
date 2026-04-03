@@ -29,7 +29,7 @@ def extract_option_label(response_text: str) -> str | None:
 
 
 def aggregate_profiles(scored_records: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    grouped: dict[tuple[str, str, str, str, str], list[dict[str, Any]]] = {}
+    grouped: dict[tuple[str, str, str, str, str, str], list[dict[str, Any]]] = {}
     for record in scored_records:
         if record.get("task_type") != "mbti_mcq":
             continue
@@ -41,6 +41,7 @@ def aggregate_profiles(scored_records: list[dict[str, Any]]) -> list[dict[str, A
             record["persona_a"],
             record["persona_b"],
             record.get("model_name", ""),
+            record.get("trial_id", ""),
         )
         grouped.setdefault(key, []).append(record)
 
@@ -48,10 +49,10 @@ def aggregate_profiles(scored_records: list[dict[str, Any]]) -> list[dict[str, A
 
 
 def _aggregate_single_group(
-    group_key: tuple[str, str, str, str, str],
+    group_key: tuple[str, str, str, str, str, str],
     items: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    run_id, condition, persona_a, persona_b, model_name = group_key
+    run_id, condition, persona_a, persona_b, model_name, trial_id = group_key
     counts = {dim: 0 for dim in ["E", "I", "S", "N", "T", "F", "J", "P"]}
     for item in items:
         counts[item["selected_dimension"]] += 1
@@ -70,6 +71,7 @@ def _aggregate_single_group(
         "persona_a": persona_a,
         "persona_b": persona_b,
         "model_name": model_name,
+        "trial_id": trial_id,
         "score_type": "mbti_profile",
         "items_scored": len(items),
         "dimension_counts": counts,

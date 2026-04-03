@@ -17,6 +17,14 @@ def _safe_json_loads(value: str | None, default: Any) -> Any:
         return default
 
 
+def _coerce_json_field(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    return json.dumps(value, ensure_ascii=False)
+
+
 @dataclass(slots=True)
 class ExperimentSample:
     sample_id: str
@@ -31,18 +39,20 @@ class ExperimentSample:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
-    def from_row(cls, row: dict[str, str]) -> "ExperimentSample":
+    def from_row(cls, row: dict[str, Any]) -> "ExperimentSample":
+        options_json = _coerce_json_field(row.get("options_json", ""))
+        metadata_json = _coerce_json_field(row.get("metadata_json", ""))
         return cls(
             sample_id=row["sample_id"],
             task_type=row["task_type"],
             source_dataset=row["source_dataset"],
             prompt_text=row.get("prompt_text", ""),
             question_text=row.get("question_text", ""),
-            options_json=row.get("options_json", ""),
+            options_json=options_json,
             target_label=row.get("target_label", ""),
-            metadata_json=row.get("metadata_json", ""),
-            options=_safe_json_loads(row.get("options_json"), []),
-            metadata=_safe_json_loads(row.get("metadata_json"), {}),
+            metadata_json=metadata_json,
+            options=_safe_json_loads(options_json, []),
+            metadata=_safe_json_loads(metadata_json, {}),
         )
 
 

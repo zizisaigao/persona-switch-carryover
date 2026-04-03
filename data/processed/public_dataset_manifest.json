@@ -1,0 +1,14 @@
+{
+  "ifeval": {
+    "hf_name": "google/IFEval",
+    "parquet_url": "https://huggingface.co/datasets/google/IFEval/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet",
+    "local_path": "data\\processed\\ifeval_full.parquet",
+    "size_bytes": 96256
+  },
+  "machine_mindset": {
+    "hf_name": "pandalla/Machine_Mindset_MBTI_dataset",
+    "parquet_url": "https://huggingface.co/datasets/pandalla/Machine_Mindset_MBTI_dataset/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet",
+    "local_path": "data\\processed\\machine_mindset_full.parquet",
+    "size_bytes": 48037221
+  }
+}

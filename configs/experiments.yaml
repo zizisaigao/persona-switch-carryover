@@ -26,6 +26,18 @@ conditions:
     use_history: false
     use_summary: true
     do_warmup: true
+  B_history_to_B:
+    active_persona_stage_2: B
+    use_history: true
+    use_summary: false
+    do_warmup: true
+    warmup_persona_override: B
+  B_summary_to_B:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+    warmup_persona_override: B
   Neutral_summary_to_B:
     active_persona_stage_2: B
     use_history: false

@@ -63,10 +63,10 @@ def build_messages(
         {"role": "system", "content": get_persona_prompt(active_persona, personas_config)}
     ]
 
-    if condition == "A_history_to_B" and prior_history:
+    if condition in {"A_history_to_B", "B_history_to_B"} and prior_history:
         messages.extend(history_pairs_to_messages(prior_history))
 
-    if condition in {"A_summary_to_B", "Neutral_summary_to_B"} and memory_summary:
+    if condition in {"A_summary_to_B", "B_summary_to_B", "Neutral_summary_to_B"} and memory_summary:
         messages.append(
             {
                 "role": "user",

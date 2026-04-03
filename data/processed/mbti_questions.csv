@@ -1,4 +1,4 @@
-question_id,section,prompt_zh,option_a_zh,option_b_zh,option_a_dimension,option_b_dimension,prompt_en,option_a_en,option_b_en
+﻿question_id,section,prompt_zh,option_a_zh,option_b_zh,option_a_dimension,option_b_dimension,prompt_en,option_a_en,option_b_en
 1,1,当你要外出一整天，你会,计划你要做什么和在什么时候做,说去就去,J,P,"When you are going out for a whole day, you tend to",plan what you will do and when to do it,just go spontaneously
 2,1,你认为自己是一个,较为随兴所至的人,较为有条理的人,P,J,You see yourself as,a rather spontaneous person,a rather organized person
 3,1,假如你是一位老师，你会选教,以事实为主的课程,涉及理论的课程,S,N,"If you were a teacher, you would prefer to teach",courses based mainly on facts,courses involving theory
