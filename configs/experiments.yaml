@@ -11,39 +11,126 @@ conditions:
     use_history: false
     use_summary: false
     do_warmup: false
+    switch_strength: default
+    retain_mechanism: none
   B_only:
     active_persona_stage_2: B
     use_history: false
     use_summary: false
     do_warmup: false
+    switch_strength: default
+    retain_mechanism: none
   A_history_to_B:
     active_persona_stage_2: B
     use_history: true
     use_summary: false
     do_warmup: true
+    switch_strength: default
+    retain_mechanism: history
   A_summary_to_B:
     active_persona_stage_2: B
     use_history: false
     use_summary: true
     do_warmup: true
+    switch_strength: default
+    retain_mechanism: summary
+  A2_history_to_B:
+    active_persona_stage_2: B
+    use_history: true
+    use_summary: false
+    do_warmup: true
+    switch_strength: default
+    retain_mechanism: history
+    reinforcement_persona: A
+    reinforcement_repeats: 2
+  A3_history_to_B:
+    active_persona_stage_2: B
+    use_history: true
+    use_summary: false
+    do_warmup: true
+    switch_strength: default
+    retain_mechanism: history
+    reinforcement_persona: A
+    reinforcement_repeats: 3
+  A2_summary_to_B:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+    switch_strength: default
+    retain_mechanism: summary
+    reinforcement_persona: A
+    reinforcement_repeats: 2
+  A3_summary_to_B:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+    switch_strength: default
+    retain_mechanism: summary
+    reinforcement_persona: A
+    reinforcement_repeats: 3
   B_history_to_B:
     active_persona_stage_2: B
     use_history: true
     use_summary: false
     do_warmup: true
     warmup_persona_override: B
+    switch_strength: default
+    retain_mechanism: history
   B_summary_to_B:
     active_persona_stage_2: B
     use_history: false
     use_summary: true
     do_warmup: true
     warmup_persona_override: B
+    switch_strength: default
+    retain_mechanism: summary
+  B_only_strong:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: false
+    do_warmup: false
+    switch_strength: strong
+    retain_mechanism: none
+  A_history_to_B_strong:
+    active_persona_stage_2: B
+    use_history: true
+    use_summary: false
+    do_warmup: true
+    switch_strength: strong
+    retain_mechanism: history
+  A_summary_to_B_strong:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+    switch_strength: strong
+    retain_mechanism: summary
+  B_history_to_B_strong:
+    active_persona_stage_2: B
+    use_history: true
+    use_summary: false
+    do_warmup: true
+    warmup_persona_override: B
+    switch_strength: strong
+    retain_mechanism: history
+  B_summary_to_B_strong:
+    active_persona_stage_2: B
+    use_history: false
+    use_summary: true
+    do_warmup: true
+    warmup_persona_override: B
+    switch_strength: strong
+    retain_mechanism: summary
   Neutral_summary_to_B:
     active_persona_stage_2: B
     use_history: false
     use_summary: true
     do_warmup: true
     warmup_persona_override: NEUTRAL
+    switch_strength: default
+    retain_mechanism: summary
 
 warmup:
   turns: 3

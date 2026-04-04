@@ -23,9 +23,11 @@ def run_warmup_dialogue(
     run_id: str,
     trial_id: str,
     sample_id: str,
+    existing_history: list[dict[str, str]] | None = None,
+    start_turn_index: int = 1,
 ) -> list[dict[str, str]]:
-    history_pairs: list[dict[str, str]] = []
-    for turn_index, warmup_prompt in enumerate(warmup_prompts, start=1):
+    history_pairs: list[dict[str, str]] = list(existing_history or [])
+    for turn_index, warmup_prompt in enumerate(warmup_prompts, start=start_turn_index):
         messages = build_warmup_messages(
             warmup_prompt=warmup_prompt,
             persona_name=persona_name,

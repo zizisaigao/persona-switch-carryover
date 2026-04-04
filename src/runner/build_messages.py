@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from src.tasks import ifeval_subset, machine_mindset, mbti_mcq
 from src.utils.schema import ExperimentSample, Message
 
@@ -55,18 +57,40 @@ def build_messages(
     persona_a: str,
     persona_b: str,
     personas_config: dict,
+    condition_config: dict[str, Any] | None = None,
     prior_history: list[dict[str, str]] | None = None,
     memory_summary: str | None = None,
+    prior_persona_name: str | None = None,
 ) -> list[Message]:
-    active_persona = persona_a if condition == "A_only" else persona_b
+    condition_config = condition_config or {}
+    active_persona = _resolve_active_persona(
+        condition=condition,
+        condition_config=condition_config,
+        persona_a=persona_a,
+        persona_b=persona_b,
+    )
+    switch_strength = str(condition_config.get("switch_strength", "default"))
     messages: list[Message] = [
-        {"role": "system", "content": get_persona_prompt(active_persona, personas_config)}
+        {
+            "role": "system",
+            "content": build_system_prompt(
+                active_persona=active_persona,
+                personas_config=personas_config,
+                switch_strength=switch_strength,
+                prior_persona_name=prior_persona_name,
+            ),
+        }
     ]
 
-    if condition in {"A_history_to_B", "B_history_to_B"} and prior_history:
+    use_history = bool(condition_config.get("use_history", condition in {"A_history_to_B", "B_history_to_B"}))
+    use_summary = bool(
+        condition_config.get("use_summary", condition in {"A_summary_to_B", "B_summary_to_B", "Neutral_summary_to_B"})
+    )
+
+    if use_history and prior_history:
         messages.extend(history_pairs_to_messages(prior_history))
 
-    if condition in {"A_summary_to_B", "B_summary_to_B", "Neutral_summary_to_B"} and memory_summary:
+    if use_summary and memory_summary:
         messages.append(
             {
                 "role": "user",
@@ -80,3 +104,46 @@ def build_messages(
 
     messages.append({"role": "user", "content": build_task_prompt(sample)})
     return messages
+
+
+def build_system_prompt(
+    *,
+    active_persona: str,
+    personas_config: dict,
+    switch_strength: str = "default",
+    prior_persona_name: str | None = None,
+) -> str:
+    base_prompt = get_persona_prompt(active_persona, personas_config)
+    if switch_strength != "strong":
+        return base_prompt
+
+    extra_lines = [
+        f"Your active persona for this response is {active_persona}.",
+        f"Respond only from the perspective of persona {active_persona}.",
+        "Do not blend personas or preserve an earlier persona if it conflicts with the active persona.",
+    ]
+    if prior_persona_name:
+        if prior_persona_name == active_persona:
+            extra_lines.append(
+                "Earlier conversation context may exist, but the active persona remains the same and must stay explicit."
+            )
+        else:
+            extra_lines.append(
+                f"Earlier conversation context may reflect persona {prior_persona_name}. Treat that only as historical context and do not continue that persona."
+            )
+    return f"{base_prompt}\n\n" + "\n".join(extra_lines)
+
+
+def _resolve_active_persona(
+    *,
+    condition: str,
+    condition_config: dict[str, Any],
+    persona_a: str,
+    persona_b: str,
+) -> str:
+    active_stage = str(condition_config.get("active_persona_stage_2", "A" if condition == "A_only" else "B"))
+    if active_stage == "A":
+        return persona_a
+    if active_stage == "B":
+        return persona_b
+    return active_stage

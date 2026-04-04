@@ -32,6 +32,8 @@ def execute_trial(
     trial_id: str,
     save_messages: bool = True,
 ) -> dict[str, Any]:
+    do_warmup = bool(condition_config.get("do_warmup", False))
+    reinforcement_repeats = int(condition_config.get("reinforcement_repeats", 1 if do_warmup else 0))
     warmup_persona = _resolve_persona_reference(
         condition_config.get("warmup_persona_override"),
         persona_a=persona_a,
@@ -42,23 +44,26 @@ def execute_trial(
     warmup_history: list[dict[str, str]] = []
     memory_summary: str | None = None
 
-    if condition_config.get("do_warmup", False):
+    if do_warmup:
         warmup_prompts = list(warmup_config.get("prompts", []))[: int(warmup_config.get("turns", 0))]
-        prior_history = run_warmup_dialogue(
-            client=client,
-            cache=cache,
-            usage_log_path=usage_log_path,
-            provider=model_config["provider"],
-            model_name=model_config["model_name"],
-            temperature=float(model_config["temperature"]),
-            max_tokens=int(model_config["max_tokens"]),
-            persona_name=warmup_persona,
-            personas_config=personas_config,
-            warmup_prompts=warmup_prompts,
-            run_id=run_id,
-            trial_id=trial_id,
-            sample_id=sample.sample_id,
-        )
+        for _ in range(max(0, reinforcement_repeats)):
+            prior_history = run_warmup_dialogue(
+                client=client,
+                cache=cache,
+                usage_log_path=usage_log_path,
+                provider=model_config["provider"],
+                model_name=model_config["model_name"],
+                temperature=float(model_config["temperature"]),
+                max_tokens=int(model_config["max_tokens"]),
+                persona_name=warmup_persona,
+                personas_config=personas_config,
+                warmup_prompts=warmup_prompts,
+                run_id=run_id,
+                trial_id=trial_id,
+                sample_id=sample.sample_id,
+                existing_history=prior_history,
+                start_turn_index=len(prior_history) + 1,
+            )
         warmup_history = list(prior_history)
         if condition_config.get("use_summary", False):
             memory_summary = summarize_history(prior_history)
@@ -70,8 +75,10 @@ def execute_trial(
         persona_a=persona_a,
         persona_b=persona_b,
         personas_config=personas_config,
+        condition_config=condition_config,
         prior_history=prior_history if condition_config.get("use_history", False) else None,
         memory_summary=memory_summary,
+        prior_persona_name=warmup_persona if do_warmup else None,
     )
     response = generate_with_cache(
         client=client,
@@ -93,9 +100,13 @@ def execute_trial(
 
     meta = {
         "source_dataset": sample.source_dataset,
-        "warmup_persona": warmup_persona if condition_config.get("do_warmup", False) else None,
+        "warmup_persona": warmup_persona if do_warmup else None,
         "warmup_history": warmup_history,
+        "warmup_turn_count": len(warmup_history),
         "memory_summary": memory_summary,
+        "switch_strength": condition_config.get("switch_strength", "default"),
+        "retain_mechanism": condition_config.get("retain_mechanism", ""),
+        "reinforcement_repeats": reinforcement_repeats,
         "target_label": sample.target_label,
         "usage": asdict(response.usage),
         "cache_hit": response.cache_hit,
