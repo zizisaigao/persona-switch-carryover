@@ -26,11 +26,12 @@ def _has_official_ifeval_metadata(sample: ExperimentSample) -> bool:
 
 def _score_with_official_checker(sample: ExperimentSample, response_text: str) -> dict[str, Any]:
     _ensure_nltk_punkt()
+    sanitized_kwargs = _normalize_official_kwargs(sample.metadata.get("kwargs", []))
     input_example = evaluation_lib.InputExample(
         key=int(sample.metadata.get("source_record", {}).get("key", 0) or 0),
         instruction_id_list=list(sample.metadata["instruction_id_list"]),
         prompt=sample.question_text,
-        kwargs=list(sample.metadata["kwargs"]),
+        kwargs=sanitized_kwargs,
     )
     prompt_to_response = {sample.question_text: response_text}
     strict_output = evaluation_lib.test_instruction_following_strict(input_example, prompt_to_response)
@@ -49,6 +50,26 @@ def _score_with_official_checker(sample: ExperimentSample, response_text: str) -
         "loose_checks_passed": sum(loose_output.follow_instruction_list),
         "meets_constraint": strict_output.follow_all_instructions,
     }
+
+
+def _normalize_official_kwargs(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    normalized = [_normalize_official_value(item) for item in value]
+    return [item for item in normalized if isinstance(item, dict)]
+
+
+def _normalize_official_value(value: Any) -> Any:
+    if isinstance(value, list):
+        return [_normalize_official_value(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            str(key): _normalize_official_value(item)
+            for key, item in value.items()
+        }
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    return value
 
 
 def _ensure_nltk_punkt() -> None:
