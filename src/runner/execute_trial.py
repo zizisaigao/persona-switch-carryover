@@ -45,8 +45,11 @@ def execute_trial(
     memory_summary: str | None = None
 
     if do_warmup:
-        warmup_prompts = list(warmup_config.get("prompts", []))[: int(warmup_config.get("turns", 0))]
-        for _ in range(max(0, reinforcement_repeats)):
+        warmup_prompt_blocks = _resolve_warmup_prompt_blocks(
+            warmup_config=warmup_config,
+            reinforcement_repeats=reinforcement_repeats,
+        )
+        for warmup_prompts in warmup_prompt_blocks:
             prior_history = run_warmup_dialogue(
                 client=client,
                 cache=cache,
@@ -103,6 +106,7 @@ def execute_trial(
         "warmup_persona": warmup_persona if do_warmup else None,
         "warmup_history": warmup_history,
         "warmup_turn_count": len(warmup_history),
+        "warmup_prompt_blocks": warmup_prompt_blocks if do_warmup else [],
         "memory_summary": memory_summary,
         "switch_strength": condition_config.get("switch_strength", "default"),
         "retain_mechanism": condition_config.get("retain_mechanism", ""),
@@ -159,3 +163,30 @@ def _resolve_persona_reference(
     if reference == "B":
         return persona_b
     return reference
+
+
+def _resolve_warmup_prompt_blocks(
+    *,
+    warmup_config: dict[str, Any],
+    reinforcement_repeats: int,
+) -> list[list[str]]:
+    if reinforcement_repeats <= 0:
+        return []
+
+    turns = int(warmup_config.get("turns", 0))
+    base_prompts = list(warmup_config.get("prompts", []))[:turns]
+    reinforcement_blocks = [
+        list(block)[:turns]
+        for block in warmup_config.get("reinforcement_prompt_blocks", [])
+    ]
+
+    required_extra_blocks = max(0, reinforcement_repeats - 1)
+    if len(reinforcement_blocks) < required_extra_blocks:
+        raise ValueError(
+            "Not enough warm-up reinforcement prompt blocks configured for "
+            f"reinforcement_repeats={reinforcement_repeats}."
+        )
+
+    prompt_blocks = [base_prompts]
+    prompt_blocks.extend(reinforcement_blocks[:required_extra_blocks])
+    return prompt_blocks

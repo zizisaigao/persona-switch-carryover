@@ -138,6 +138,13 @@ warmup:
     - "How do you usually approach a difficult long-term goal?"
     - "What matters more when making a decision: logic, relationships, or momentum?"
     - "Describe how you would advise someone who feels stuck."
+  reinforcement_prompt_blocks:
+    - - "When a team is divided on what to do next, how do you usually help move the group forward?"
+      - "If a plan starts breaking down halfway through, what do you change first?"
+      - "What kind of mistake bothers you more: inefficiency, unfairness, or lack of follow-through?"
+    - - "How do you decide whether to follow a proven method or improvise in the moment?"
+      - "When someone asks for advice during a stressful transition, what do you focus on first?"
+      - "What makes you trust that a difficult decision is the right one?"
 
 budget:
   max_samples_per_run: 10
