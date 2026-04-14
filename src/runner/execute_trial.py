@@ -31,6 +31,7 @@ def execute_trial(
     run_id: str,
     trial_id: str,
     save_messages: bool = True,
+    shared_warmup_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     do_warmup = bool(condition_config.get("do_warmup", False))
     reinforcement_repeats = int(condition_config.get("reinforcement_repeats", 1 if do_warmup else 0))
@@ -43,8 +44,16 @@ def execute_trial(
     prior_history: list[dict[str, str]] = []
     warmup_history: list[dict[str, str]] = []
     memory_summary: str | None = None
+    warmup_prompt_blocks: list[list[str]] = []
 
-    if do_warmup:
+    if shared_warmup_context is not None:
+        prior_history = [dict(item) for item in shared_warmup_context["prior_history"]]
+        warmup_history = [dict(item) for item in shared_warmup_context["warmup_history"]]
+        memory_summary = shared_warmup_context["memory_summary"]
+        warmup_prompt_blocks = [list(block) for block in shared_warmup_context["warmup_prompt_blocks"]]
+        warmup_persona = str(shared_warmup_context["warmup_persona"])
+        reinforcement_repeats = int(shared_warmup_context["reinforcement_repeats"])
+    elif do_warmup:
         warmup_prompt_blocks = _resolve_warmup_prompt_blocks(
             warmup_config=warmup_config,
             reinforcement_repeats=reinforcement_repeats,
@@ -147,6 +156,74 @@ def make_resume_key(record: dict[str, Any]) -> str:
         },
         sort_keys=True,
     )
+
+
+def prepare_shared_warmup_context(
+    *,
+    condition_config: dict[str, Any],
+    persona_a: str,
+    persona_b: str,
+    personas_config: dict[str, Any],
+    warmup_config: dict[str, Any],
+    model_config: dict[str, Any],
+    client: BaseClient,
+    cache: RequestCache | None,
+    usage_log_path: Path,
+    run_id: str,
+    trial_id: str,
+    shared_sample_id: str = "__shared_warmup__",
+) -> dict[str, Any] | None:
+    do_warmup = bool(condition_config.get("do_warmup", False))
+    if not do_warmup:
+        return None
+
+    reinforcement_repeats = int(condition_config.get("reinforcement_repeats", 1))
+    warmup_persona = _resolve_persona_reference(
+        condition_config.get("warmup_persona_override"),
+        persona_a=persona_a,
+        persona_b=persona_b,
+        default_persona=persona_a,
+    )
+    warmup_prompt_blocks = _resolve_warmup_prompt_blocks(
+        warmup_config=warmup_config,
+        reinforcement_repeats=reinforcement_repeats,
+    )
+
+    prior_history: list[dict[str, str]] = []
+    for warmup_prompts in warmup_prompt_blocks:
+        prior_history = run_warmup_dialogue(
+            client=client,
+            cache=cache,
+            usage_log_path=usage_log_path,
+            provider=model_config["provider"],
+            model_name=model_config["model_name"],
+            temperature=float(model_config["temperature"]),
+            max_tokens=int(model_config["max_tokens"]),
+            persona_name=warmup_persona,
+            personas_config=personas_config,
+            warmup_prompts=warmup_prompts,
+            run_id=run_id,
+            trial_id=trial_id,
+            sample_id=shared_sample_id,
+            existing_history=prior_history,
+            start_turn_index=len(prior_history) + 1,
+        )
+
+    warmup_history = [dict(item) for item in prior_history]
+    memory_summary: str | None = None
+    history_for_messages = [dict(item) for item in prior_history]
+    if condition_config.get("use_summary", False):
+        memory_summary = summarize_history(prior_history)
+        history_for_messages = []
+
+    return {
+        "prior_history": history_for_messages,
+        "warmup_history": warmup_history,
+        "memory_summary": memory_summary,
+        "warmup_prompt_blocks": warmup_prompt_blocks,
+        "warmup_persona": warmup_persona,
+        "reinforcement_repeats": reinforcement_repeats,
+    }
 
 
 def _resolve_persona_reference(

@@ -19,3 +19,8 @@ outputs/figures/*
 !outputs/scored/.gitkeep
 !outputs/tables/.gitkeep
 !outputs/figures/.gitkeep
+outputs/embedding_cache/
+outputs/hf_cache/
+outputs/nltk_data/
+outputs/tmp_smoke/
+backup/

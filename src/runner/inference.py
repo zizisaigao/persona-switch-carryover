@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+import json
+import os
 from pathlib import Path
 
 from src.models.base_client import BaseClient
@@ -8,6 +10,12 @@ from src.models.cache import RequestCache
 from src.utils.ids import timestamp_utc
 from src.utils.io import append_jsonl
 from src.utils.schema import Message, ModelResponse, UsageStats
+
+
+class BudgetExceededError(RuntimeError):
+    def __init__(self, message: str, *, current_cost_usd: float) -> None:
+        super().__init__(message)
+        self.current_cost_usd = current_cost_usd
 
 
 def generate_with_cache(
@@ -22,6 +30,8 @@ def generate_with_cache(
     max_tokens: int,
     log_context: dict[str, str],
 ) -> ModelResponse:
+    _check_run_cost_budget(usage_log_path)
+
     cache_key = None
     if cache is not None:
         cache_key = cache.build_key(
@@ -64,6 +74,7 @@ def generate_with_cache(
                 "latency_seconds": response.latency_seconds,
             },
         )
+    _check_run_cost_budget(usage_log_path)
     return response
 
 
@@ -87,3 +98,37 @@ def _log_usage(
     }
     record.update(log_context)
     append_jsonl(usage_log_path, record)
+
+
+def _check_run_cost_budget(usage_log_path: Path) -> None:
+    max_cost_raw = os.getenv("MAX_RUN_COST_USD", "").strip()
+    if not max_cost_raw:
+        return
+
+    max_cost_usd = float(max_cost_raw)
+    baseline_usd = float(os.getenv("RUN_COST_BASELINE_USD", "0").strip() or 0.0)
+    total_cost_usd = _read_logged_cost_usd(usage_log_path)
+    run_cost_usd = total_cost_usd - baseline_usd
+    if run_cost_usd > max_cost_usd:
+        raise BudgetExceededError(
+            f"Run cost budget exceeded: run_cost_usd={run_cost_usd:.6f} > max_cost_usd={max_cost_usd:.6f}",
+            current_cost_usd=run_cost_usd,
+        )
+
+
+def _read_logged_cost_usd(usage_log_path: Path) -> float:
+    if not usage_log_path.exists():
+        return 0.0
+
+    total = 0.0
+    with usage_log_path.open("r", encoding="utf-8") as handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            total += float(record.get("cost_usd", 0.0) or 0.0)
+    return round(total, 8)

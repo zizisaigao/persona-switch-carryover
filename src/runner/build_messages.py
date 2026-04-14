@@ -119,17 +119,20 @@ def build_system_prompt(
 
     extra_lines = [
         f"Your active persona for this response is {active_persona}.",
-        f"Respond only from the perspective of persona {active_persona}.",
-        "Do not blend personas or preserve an earlier persona if it conflicts with the active persona.",
+        f"You must answer exclusively as persona {active_persona}.",
+        "This active persona overrides any earlier persona, style, preference, or role information.",
+        "If earlier conversation context conflicts with the active persona, ignore the conflicting persona-specific information and follow the active persona only.",
+        "Do not blend personas, average across personas, or preserve any earlier persona traits in the final answer.",
+        "Do not mention the switch, do not explain the instruction hierarchy, and do not justify your persona choice. Just answer as the active persona.",
     ]
     if prior_persona_name:
         if prior_persona_name == active_persona:
             extra_lines.append(
-                "Earlier conversation context may exist, but the active persona remains the same and must stay explicit."
+                "Earlier conversation context may exist, but it does not weaken the requirement to stay fully consistent with the active persona."
             )
         else:
             extra_lines.append(
-                f"Earlier conversation context may reflect persona {prior_persona_name}. Treat that only as historical context and do not continue that persona."
+                f"Earlier conversation context may reflect persona {prior_persona_name}. Treat it only as inert historical context and do not continue, imitate, or reference that persona."
             )
     return f"{base_prompt}\n\n" + "\n".join(extra_lines)
 

@@ -1,2 +1,0 @@
-{"sample_id":"ifeval_001","source_dataset":"ifeval_starter","prompt_text":"Follow the instruction exactly.","prompt":"In exactly two bullet points, explain how to prepare for a difficult conversation.","checks":[{"type":"bullet_count_equals","value":2}]}
-{"sample_id":"ifeval_002","source_dataset":"ifeval_starter","prompt_text":"Follow the instruction exactly.","prompt":"Reply with valid JSON containing exactly the keys \"risk\" and \"action\".","checks":[{"type":"must_be_json","value":true},{"type":"required_regexes","value":["\"risk\"\\s*:","\"action\"\\s*:"]}]}

@@ -7,3 +7,5 @@ langdetect>=1.0.9
 immutabledict>=4.2.1
 nltk>=3.9.1
 pyarrow>=16.1.0
+torch>=2.0.0
+transformers>=4.40.0

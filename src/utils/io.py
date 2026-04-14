@@ -97,11 +97,7 @@ def _load_rows(path: Path, rows: list[dict[str, Any]]) -> list[ExperimentSample]
 
 
 def _looks_like_ifeval_rows(fieldnames: set[str]) -> bool:
-    return bool(
-        {"instruction_id_list", "kwargs", "checks"} & fieldnames
-    ) or (
-        {"prompt", "instruction", "input"} & fieldnames and "question" not in fieldnames
-    )
+    return {"instruction_id_list", "kwargs"}.issubset(fieldnames)
 
 
 def _looks_like_machine_mindset_rows(fieldnames: set[str]) -> bool:
@@ -155,15 +151,18 @@ def _load_mbti_questionnaire_rows(rows: list[dict[str, Any]]) -> list[Experiment
 def _load_ifeval_rows(rows: list[dict[str, Any]]) -> list[ExperimentSample]:
     samples: list[ExperimentSample] = []
     for index, row in enumerate(rows, start=1):
+        if "instruction_id_list" not in row or "kwargs" not in row:
+            raise ValueError(
+                "IFEval rows must include official instruction_id_list and kwargs fields. "
+                "Legacy fallback-style IFEval schemas are no longer supported."
+            )
         instruction_text = _first_non_empty(
             row.get("question_text"),
             row.get("prompt"),
             row.get("instruction"),
             row.get("input"),
         )
-        checks = _collect_explicit_checks(row)
         metadata = {
-            "checks": checks,
             "instruction_id_list": _normalize_json_field(row.get("instruction_id_list"), []),
             "kwargs": _sanitize_ifeval_kwargs(_normalize_json_field(row.get("kwargs"), {})),
             "split": row.get("split", ""),
@@ -179,22 +178,6 @@ def _load_ifeval_rows(rows: list[dict[str, Any]]) -> list[ExperimentSample]:
                     "instruction",
                     "input",
                     "target_label",
-                    "checks",
-                    "required_substrings",
-                    "forbidden_substrings",
-                    "required_regexes",
-                    "forbidden_regexes",
-                    "response_must_start_with",
-                    "response_must_end_with",
-                    "bullet_count_equals",
-                    "line_count_equals",
-                    "word_count_equals",
-                    "min_word_count",
-                    "max_word_count",
-                    "sentence_count_equals",
-                    "min_sentences",
-                    "max_sentences",
-                    "must_be_json",
                 }
             },
         }
@@ -254,41 +237,6 @@ def _load_machine_mindset_rows(rows: list[dict[str, Any]]) -> list[ExperimentSam
         )
         samples.append(sample)
     return samples
-
-
-def _collect_explicit_checks(row: dict[str, Any]) -> list[dict[str, Any]]:
-    if "checks" in row and row["checks"] not in (None, "", []):
-        existing = _normalize_json_field(row["checks"], [])
-        if isinstance(existing, dict):
-            return [existing]
-        if isinstance(existing, list):
-            return [item for item in existing if isinstance(item, dict)]
-
-    checks: list[dict[str, Any]] = []
-    direct_mappings = {
-        "required_substrings": "required_substrings",
-        "forbidden_substrings": "forbidden_substrings",
-        "required_regexes": "required_regexes",
-        "forbidden_regexes": "forbidden_regexes",
-        "response_must_start_with": "response_must_start_with",
-        "response_must_end_with": "response_must_end_with",
-        "bullet_count_equals": "bullet_count_equals",
-        "line_count_equals": "line_count_equals",
-        "word_count_equals": "word_count_equals",
-        "min_word_count": "min_word_count",
-        "max_word_count": "max_word_count",
-        "sentence_count_equals": "sentence_count_equals",
-        "min_sentences": "min_sentences",
-        "max_sentences": "max_sentences",
-        "must_be_json": "must_be_json",
-        "exact_match": "exact_match",
-    }
-    for field_name, check_type in direct_mappings.items():
-        value = row.get(field_name)
-        if value in (None, "", []):
-            continue
-        checks.append({"type": check_type, "value": _normalize_json_field(value, value)})
-    return checks
 
 
 def _normalize_json_field(value: Any, default: Any) -> Any:

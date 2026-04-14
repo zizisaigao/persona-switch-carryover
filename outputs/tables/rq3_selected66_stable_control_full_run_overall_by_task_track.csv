@@ -1,0 +1,7 @@
+task_type,retain_mechanism,reinforcement_repeats,n_pairs,share_rq3_weakened,mean_simple_primary_gap_abs,mean_reinforced_primary_gap_abs,mean_primary_gap_change,median_primary_gap_change,mean_simple_scs,mean_reinforced_scs,mean_scs_change,mean_simple_rai,mean_reinforced_rai,mean_rai_change
+ifeval,history,3,57,0.2281,0.0409,0.0351,-0.0058,0.0,0.5036,0.5217,0.0182,-0.0446,-0.0603,-0.0156
+ifeval,summary,3,61,0.6393,0.0388,0.053,0.0142,0.0,0.4793,0.4579,-0.0214,-0.0402,-0.0349,0.0053
+machine_mindset,history,3,57,0.5088,0.0434,0.038,-0.0055,-0.0017,0.2099,0.2146,0.0047,0.0106,0.0171,0.0064
+machine_mindset,summary,3,61,0.7049,0.0146,0.0286,0.014,0.0037,0.3771,0.3082,-0.0689,-0.0531,-0.0492,0.0039
+mbti_mcq,history,3,57,0.5614,0.3026,0.3684,0.0658,0.0,0.6878,0.661,-0.0268,0.0987,0.1334,0.0347
+mbti_mcq,summary,3,61,0.623,0.0,0.041,0.041,0.0,0.9179,0.8854,-0.0324,-0.3626,-0.3087,0.0539

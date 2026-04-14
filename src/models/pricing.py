@@ -5,6 +5,7 @@ from src.utils.schema import UsageStats
 
 DEFAULT_PRICING_USD_PER_MILLION: dict[str, dict[str, float]] = {
     "openai/gpt-4o-mini": {"input": 0.15, "output": 0.60},
+    "gemini-2.5-flash-lite": {"input": 0.10, "output": 0.40},
     "mock/persona-simulator": {"input": 0.0, "output": 0.0},
 }
 

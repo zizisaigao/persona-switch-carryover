@@ -10,6 +10,7 @@ class RequestCache:
     def __init__(self, cache_dir: Path) -> None:
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+        self._memory_cache: dict[str, dict[str, Any]] = {}
 
     def build_key(
         self,
@@ -34,13 +35,19 @@ class RequestCache:
         return self.cache_dir / f"{key}.json"
 
     def get(self, key: str) -> dict[str, Any] | None:
+        cached = self._memory_cache.get(key)
+        if cached is not None:
+            return cached
         path = self._path(key)
         if not path.exists():
             return None
         with path.open("r", encoding="utf-8") as handle:
-            return json.load(handle)
+            cached = json.load(handle)
+        self._memory_cache[key] = cached
+        return cached
 
     def set(self, key: str, value: dict[str, Any]) -> None:
+        self._memory_cache[key] = value
         path = self._path(key)
         with path.open("w", encoding="utf-8") as handle:
             json.dump(value, handle, ensure_ascii=False, indent=2)

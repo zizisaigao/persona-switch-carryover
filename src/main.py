@@ -10,10 +10,18 @@ from typing import Any
 from dotenv import load_dotenv
 
 from src.models.cache import RequestCache
+from src.models.gemini_client import GeminiClient
 from src.models.mock_client import MockClient
 from src.models.openrouter_client import OpenRouterClient
 from src.runner.batch_run import run_batch
-from src.scoring import score_ifeval, score_mbti, score_similarity
+from src.scoring import score_ifeval, score_mbti
+from src.scoring.score_machine_mindset import (
+    DEFAULT_EMBEDDING_MODEL,
+    active_persona_for_condition,
+    build_reference_bank,
+    score_dimension_response,
+    score_self_awareness_response,
+)
 from src.utils.config import get_project_root, load_all_configs
 from src.utils.ids import make_run_id
 from src.utils.io import load_samples, write_jsonl
@@ -146,7 +154,7 @@ def main() -> None:
         run_id=run_id,
     )
 
-    scored_records = score_batch(records, samples)
+    scored_records = score_batch(records, samples, project_root=project_root)
     scored_output = project_root / paths_config["scored_dir"] / f"{run_id}_scores.jsonl"
     write_jsonl(scored_output, scored_records)
     mbti_profiles = score_mbti.aggregate_profiles(scored_records)
@@ -167,6 +175,12 @@ def build_client(model_config: dict[str, Any]):
     provider = model_config["provider"]
     if provider == "mock":
         return MockClient()
+    if provider == "gemini":
+        return GeminiClient(
+            api_key_env=model_config["api_key_env"],
+            timeout_seconds=int(model_config.get("timeout_seconds", 60)),
+            max_retries=int(model_config.get("max_retries", 3)),
+        )
     if provider == "openrouter":
         return OpenRouterClient(
             api_key_env=model_config["api_key_env"],
@@ -253,9 +267,21 @@ def _load_sample_ids(path: Path) -> list[str]:
         return [line.strip() for line in handle if line.strip()]
 
 
-def score_batch(records: list[dict[str, Any]], samples: list[ExperimentSample]) -> list[dict[str, Any]]:
+def score_batch(
+    records: list[dict[str, Any]],
+    samples: list[ExperimentSample],
+    *,
+    project_root: Path,
+    reference_bank: dict[str, Any] | None = None,
+    embedding_cache_dir: Path | None = None,
+) -> list[dict[str, Any]]:
     by_id = {sample.sample_id: sample for sample in samples}
     scored: list[dict[str, Any]] = []
+    has_machine_mindset = any(sample.task_type == "machine_mindset" for sample in samples)
+    if has_machine_mindset and reference_bank is None:
+        reference_bank = build_reference_bank(project_root / "data" / "processed" / "machine_mindset_labeled.parquet")
+    if embedding_cache_dir is None:
+        embedding_cache_dir = project_root / "outputs" / "embedding_cache"
 
     for record in records:
         sample = by_id[record["sample_id"]]
@@ -267,13 +293,13 @@ def score_batch(records: list[dict[str, Any]], samples: list[ExperimentSample]) 
         elif task_type == "ifeval":
             task_score = score_ifeval.score_response(sample, response_text)
         else:
-            task_score = score_similarity.score_text_similarity(
-                sample.question_text,
-                response_text,
-                sample.metadata,
+            task_score = _score_machine_mindset_response(
+                sample=sample,
+                record=record,
+                response_text=response_text,
+                reference_bank=reference_bank,
+                embedding_cache_dir=embedding_cache_dir,
             )
-            task_score["sample_id"] = sample.sample_id
-            task_score["score_type"] = "machine_mindset"
 
         task_score.update(
             {
@@ -288,6 +314,67 @@ def score_batch(records: list[dict[str, Any]], samples: list[ExperimentSample]) 
         )
         scored.append(task_score)
     return scored
+
+
+def _score_machine_mindset_response(
+    *,
+    sample: ExperimentSample,
+    record: dict[str, Any],
+    response_text: str,
+    reference_bank: dict[str, Any] | None,
+    embedding_cache_dir: Path,
+) -> dict[str, Any]:
+    if reference_bank is None:
+        raise ValueError("Machine Mindset scoring requires a loaded reference bank.")
+    prompt_key = str(sample.metadata.get("prompt_key", ""))
+    source_group = str(sample.metadata.get("source_group", ""))
+    if not prompt_key or not source_group:
+        raise ValueError(
+            f"Machine Mindset sample {sample.sample_id} is missing prompt_key/source_group metadata required for alignment scoring."
+        )
+
+    active_persona = active_persona_for_condition(
+        str(record.get("condition", "")),
+        str(record.get("persona_a", "")),
+        str(record.get("persona_b", "")),
+    )
+    task_score: dict[str, Any]
+    if source_group == "self_awareness":
+        task_score = score_self_awareness_response(
+            response_text=response_text,
+            prompt_key=prompt_key,
+            target_mbti_type=active_persona,
+            reference_bank=reference_bank,
+            persona_a=str(record.get("persona_a", "")),
+            embedding_cache_dir=embedding_cache_dir,
+        )
+    elif source_group == "dimension_pole":
+        dimension = str(sample.metadata.get("mbti_dimension", ""))
+        if not dimension:
+            raise ValueError(
+                f"Machine Mindset dimension-pole sample {sample.sample_id} is missing mbti_dimension metadata."
+            )
+        task_score = score_dimension_response(
+            response_text=response_text,
+            prompt_key=prompt_key,
+            dimension=dimension,
+            target_mbti_type=active_persona,
+            reference_bank=reference_bank,
+            persona_a=str(record.get("persona_a", "")),
+            embedding_cache_dir=embedding_cache_dir,
+        )
+    else:
+        raise ValueError(f"Unsupported Machine Mindset source_group: {source_group!r}")
+
+    task_score.update(
+        {
+            "sample_id": sample.sample_id,
+            "score_type": "machine_mindset_alignment",
+            "similarity_backend": "embedding",
+            "embedding_model": DEFAULT_EMBEDDING_MODEL,
+        }
+    )
+    return task_score
 
 
 if __name__ == "__main__":

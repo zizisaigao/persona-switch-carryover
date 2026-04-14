@@ -1,0 +1,3 @@
+retain_mechanism,unordered_pairs,symmetric_pairs,asymmetric_pairs,symmetry_rate,both_success_pairs,both_fail_pairs
+history,66,44,22,0.6667,2,42
+summary,66,52,14,0.7879,51,1

@@ -38,9 +38,15 @@ personas:
   INTP:
     label: "Logician"
     system_prompt: "You are Persona: INTP."
+  INFP:
+    label: "Mediator"
+    system_prompt: "You are Persona: INFP."
   ESFJ:
     label: "Consul"
     system_prompt: "You are Persona: ESFJ."
+  ESTJ:
+    label: "Executive"
+    system_prompt: "You are Persona: ESTJ."
   NEUTRAL:
     label: "Neutral"
     system_prompt: |

@@ -1,0 +1,7 @@
+task_type,retain_mechanism,n_pairs,mean_primary_gap_abs,median_primary_gap_abs,mean_scs,median_scs,mean_rai,median_rai,share_rai_positive,share_switch_reaches_target_b
+ifeval,history,240,0.0383,0.0334,0.5046,0.505,-0.0444,-0.0465,0.0958,
+ifeval,summary,240,0.0397,0.0334,0.4787,0.4784,-0.0416,-0.0398,0.0667,
+machine_mindset,history,240,0.0422,0.0333,0.2056,0.2,0.0131,0.012,0.6292,
+machine_mindset,summary,240,0.018,0.0127,0.354,0.3667,-0.0477,-0.0488,0.0458,
+mbti_mcq,history,240,0.3146,0.25,0.6627,0.6989,0.1478,0.1505,0.6917,0.2125
+mbti_mcq,summary,240,0.0396,0.0,0.8909,0.9032,-0.3152,-0.3065,0.025,0.7292

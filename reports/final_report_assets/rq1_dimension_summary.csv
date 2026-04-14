@@ -1,0 +1,9 @@
+retain_mechanism,dimension,n_pairs,a_letter_rate,b_letter_rate,other_rate,share_switch_reaches_target_b
+history,EI,72,0.7222,0.2778,0.0,0.1806
+history,SN,70,0.7,0.2571,0.0429,0.1857
+history,TF,72,0.7778,0.2083,0.0139,0.1944
+history,JP,64,0.6875,0.2969,0.0156,0.1875
+summary,EI,72,0.0,1.0,0.0,0.9028
+summary,SN,70,0.0857,0.9143,0.0,0.8286
+summary,TF,72,0.0,1.0,0.0,0.9028
+summary,JP,64,0.1094,0.8438,0.0469,0.8125

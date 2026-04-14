@@ -1,0 +1,17 @@
+persona,rq1_premise_final_type,rq1_self_match,rq2_strong_premise_final_type,rq2_strong_self_match,stable_in_both
+INTJ,INTJ,True,INTJ,True,True
+INFJ,INFJ,True,INFJ,True,True
+ENFJ,ENFJ,True,ENFJ,True,True
+ISFJ,ISFJ,True,ISFJ,True,True
+ENTJ,ENTJ,True,ENTJ,True,True
+ENTP,ENTP,True,ENTP,True,True
+ESTP,ENTP,False,ESTP,True,False
+ISTP,ISTP,True,ISTP,True,True
+ESFP,ENFP,False,ENFP,False,False
+ISFP,INFP,False,INFP,False,False
+ENFP,ENFP,True,ENFP,True,True
+ISTJ,ISTJ,True,ISTJ,True,True
+INTP,INTJ,False,INTP,True,False
+INFP,INFP,True,INFP,True,True
+ESFJ,ESFJ,True,ESFJ,True,True
+ESTJ,ESTJ,True,ESTJ,True,True

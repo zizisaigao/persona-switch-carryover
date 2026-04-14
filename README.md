@@ -1,284 +1,206 @@
 # Persona Switching Research Pipeline
 
-This repository is a lightweight Python experiment scaffold for studying persona carryover in LLM dialogue.
+This repository studies whether earlier persona context continues to shape model behavior after the active system prompt has been updated to a new target persona.
 
-The core question is:
-does a persona-conditioned prior interaction state continue to influence outputs after the active system prompt changes to a new persona?
+The finalized study uses three task families:
 
-This is not a study of hidden product memory or native persistent memory. It studies influence transmitted through:
+- closed-form multiple-choice personality items
+- open-ended persona-related prompts
+- constrained instruction-following prompts
 
-- preserved multi-turn dialogue history
-- compact memory summaries derived from prior interaction
+The main inferential comparison is always a matched switch-versus-control contrast:
 
-## Conditions
+- switch condition: `A -> B`
+- matched control: `B -> B`
 
-- `A_only`: active system prompt is persona A, no prior history
-- `B_only`: active system prompt is persona B, no prior history
-- `A_history_to_B`: warm-up under persona A, then switch active system prompt to B while preserving the original A-stage dialogue history
-- `A_summary_to_B`: warm-up under persona A, summarize the interaction into a compact memory block, discard the full history, then evaluate under active persona B
+Premise runs are retained only to verify that the model can express a requested MBTI target in the absence of switching interference.
 
-`A_history_to_B` and `A_summary_to_B` are intentionally different:
+## Final Research Design
 
-- `A_history_to_B` tests whether full conversational context carries persona influence forward
-- `A_summary_to_B` tests whether a compressed memory representation is enough to preserve that influence
+### Premise Libraries
 
-At evaluation time there is only one active system prompt. In the switch conditions, that active prompt is persona B. Persona A affects evaluation only through retained history or summary memory.
+The pipeline uses two library-style premise conditions:
+
+- `MBTI_only`
+- `MBTI_only_strong`
+
+These conditions are run once for all `16` MBTI types. They are not pair-specific. During analysis:
+
+- `A_only` is recovered by selecting the `MBTI_only` run whose target persona equals `A`
+- `B_only` is recovered by selecting the `MBTI_only` run whose target persona equals `B`
+- `A_only_strong` is recovered from `MBTI_only_strong`
+- `B_only_strong` is recovered from `MBTI_only_strong`
+
+### RQ1
+
+RQ1 asks whether earlier persona context affects final behavior under the same target persona `B`.
+
+Matched comparisons:
+
+- `A_history_to_B` vs `B_history_to_B`
+- `A_summary_to_B` vs `B_summary_to_B`
+
+### RQ2
+
+RQ2 asks whether a stronger and more explicit final update to persona `B` attenuates the switching effect.
+
+Pair-level conditions:
+
+- `A_history_to_B_strong`
+- `A_summary_to_B_strong`
+- `B_history_to_B_strong`
+- `B_summary_to_B_strong`
+
+### RQ3
+
+RQ3 asks whether stronger pre-switch reinforcement of persona `A` amplifies the switching effect.
+
+Simple versus reinforced comparisons:
+
+- `A_history_to_B` vs `B_history_to_B`
+- `A_summary_to_B` vs `B_summary_to_B`
+- `A3_history_to_B` vs `B3_history_to_B`
+- `A3_summary_to_B` vs `B3_summary_to_B`
+
+## Warmup Design
+
+The base warmup contains three turns:
+
+1. `How do you usually approach a difficult long-term goal?`
+2. `What matters more when making a decision: logic, relationships, or momentum?`
+3. `Describe how you would advise someone who feels stuck.`
+
+For `A3_*` and `B3_*`, the warmup expands to three distinct blocks rather than repeating the same block verbatim.
+
+Turn counts:
+
+- simple switch conditions: `3` warmup turns
+- `A3_*` and `B3_*`: `9` warmup turns
+
+Summary-track conditions summarize all executed warmup turns rather than truncating after the first block.
+
+## Datasets
+
+The active full-run datasets are:
+
+- `data/processed/mbti_questions.csv`
+- `data/processed/machine_mindset_self_awareness_sample30.jsonl`
+- `data/processed/ifeval_sample30.jsonl`
+
+Supporting processed resources include:
+
+- `data/processed/machine_mindset_labeled.parquet`
+- `data/processed/machine_mindset_self_awareness_eval.jsonl`
+- `data/processed/machine_mindset_dimension_eval.jsonl`
+- `data/processed/ifeval_full.parquet`
+
+## Machine Mindset Scoring
+
+Machine Mindset now uses the reference-bank alignment scorer directly inside the main experiment runner rather than through a separate post-hoc scoring pass.
+
+- main implementation: `src/scoring/score_machine_mindset.py`
+- runner integration: `src/main.py`
+- method: semantic embedding similarity followed by reference-bank ranking
+- default embedding model: `sentence-transformers/all-MiniLM-L6-v2`
+
+The runner compares each generated answer against prompt-matched labeled references and writes the resulting target-alignment and residual-influence metrics directly into the normal per-run scored files under `outputs/scored`.
 
 ## Repository Layout
 
-The project emphasizes:
+- `configs/`: finalized experiment, model, persona, and task configs
+- `data/processed/`: active processed datasets used in the full run
+- `reports/`: finalized workflow and metric documentation
+- `scripts/analysis/`: pair-level analysis and full-run report-table builders
+- `scripts/checks/`: environment and API validation utilities
+- `scripts/data/`: dataset download and evaluation-set preparation utilities
+- `src/`: runner, scoring, model clients, analysis helpers, and utilities
 
-- modular configs in YAML
-- clear data schema
-- isolated message construction
-- pluggable model clients
-- JSONL generation and usage logs
-- mock mode, caching, and resumable runs
+## Environment
 
-## Quick Start
+Run project commands only after activating the project environment:
 
-1. Create an environment and install dependencies:
+```powershell
+conda activate mldl
+Set-Location D:\GWHfiles\PythonScripts\ST5230Project\persona-switch-carryover
+```
 
-```bash
+Install dependencies inside that environment with:
+
+```powershell
 pip install -r requirements.txt
 ```
 
-2. Copy `.env.example` to `.env` if you plan to use a real API later.
+## Quick Checks
 
-3. Run the toy pipeline in mock mode:
+Validate Gemini access:
 
-```bash
-python -m src.main --mock --condition A_summary_to_B --persona-a INTJ --persona-b ESFP
+```powershell
+$env:GEMINI_API_KEY="YOUR_KEY"
+python scripts/checks/check_gemini_api.py --json
 ```
 
-This runs end-to-end on `data/processed/samples_toy.csv` and writes JSONL outputs to `outputs/raw_generations/`.
+Build the Machine Mindset evaluation sets if needed:
 
-## Dataset Inputs
-
-The runner accepts either `.csv` or `.jsonl` sample files through `--samples-file`.
-
-Supported formats:
-
-- unified experiment rows with `sample_id`, `task_type`, `source_dataset`, `prompt_text`, `question_text`, `options_json`, `target_label`, `metadata_json`
-- raw MBTI questionnaire CSV in the current `data/processed/mbti_questions.csv` format
-- raw-ish `IFEval` JSONL/CSV rows with `prompt` or `instruction`, plus either `checks`, `instruction_id_list`, or `kwargs`
-- raw-ish `Machine Mindset` JSONL/CSV rows with `question` plus `reference_answer`, `reference_answers`, or `expected_keywords`
-
-Starter templates are included:
-
-- `data/processed/ifeval_starter.jsonl`
-- `data/processed/machine_mindset_starter.jsonl`
-
-To download the full public datasets into `data/processed/`:
-
-```bash
-python scripts/download_public_datasets.py --dataset all
+```powershell
+python scripts/data/build_machine_mindset_eval_sets.py
 ```
 
-This writes:
+## Analysis And Reporting
 
-- `data/processed/ifeval_full.parquet`
-- `data/processed/machine_mindset_full.parquet`
-- `data/processed/public_dataset_manifest.json`
+The analysis layer is organized around three pair-level scripts:
 
-Important note for `Machine Mindset`:
+- `scripts/analysis/rq1_analyze_matched_switch.py`
+- `scripts/analysis/rq2_analyze_strong_update.py`
+- `scripts/analysis/rq3_analyze_warmup_reinforcement.py`
 
-- the Hugging Face auto-converted parquet only preserves `instruction / input / output`
-- it does **not** preserve the MBTI file-level labels encoded in the original JSON filenames
-- for persona-aware analysis, rebuild the dataset from the original JSON files instead:
+Pair routing from `RQ1` into `RQ2` or `RQ3` is handled by:
 
-```bash
-python scripts/download_machine_mindset_labeled.py --languages en
-```
+- `scripts/analysis/rq1_route_pairs.py`
 
-This writes:
+Full-run report tables are built by:
 
-- `data/processed/machine_mindset_labeled.parquet`
-- `data/processed/machine_mindset_labeled_manifest.json`
+- `scripts/analysis/rq1_build_full_report_tables.py`
+- `scripts/analysis/rq2_build_full_report_tables.py`
+- `scripts/analysis/rq3_build_full_report_tables.py`
 
-The labeled parquet includes:
+## Metric Logic
 
-- `source_file`
-- `source_group`
-- `mbti_type`
-- `mbti_dimension`
-- `mbti_pole`
-- `mbti_code`
+All three research questions use the same comparison structure:
 
-To turn the labeled parquet into prompt-aligned evaluation sets:
+1. a target-oriented task outcome
+2. consistency with the matched `B -> B` control
+3. residual pull toward the `A` premise
 
-```bash
-python scripts/build_machine_mindset_eval_sets.py
-```
+Task-specific surface metrics differ:
 
-This writes:
+- `MBTI`: `OSR`, matched-control `SCS`, and `RAI`
+- `Machine Mindset`: target similarity, matched-control `SCS`, and residual `A` margin
+- `IFEval`: instruction-following primary metric, lexical matched-control `SCS`, and lexical `RAI`
 
-- `data/processed/machine_mindset_self_awareness_eval.jsonl`
-- `data/processed/machine_mindset_dimension_eval.jsonl`
+The detailed definitions are documented in:
 
-To score generated runs against the labeled MBTI reference bank:
+- `reports/metric_and_comparison_guide.md`
 
-```bash
-python scripts/score_machine_mindset_alignment.py --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-4o-mini --eval-samples-file data/processed/machine_mindset_self_awareness_eval.jsonl
-python scripts/score_machine_mindset_alignment.py --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-4o-mini --eval-samples-file data/processed/machine_mindset_dimension_eval.jsonl
-```
+## Full-Run Workflow
 
-The alignment scorer defaults to semantic `embedding` similarity using `distilbert-base-uncased`.
-To fall back to lexical matching, pass:
+The recommended execution order is:
 
-```bash
-python scripts/score_machine_mindset_alignment.py --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-4o-mini --eval-samples-file data/processed/machine_mindset_self_awareness_eval.jsonl --similarity-backend tfidf
-```
+1. build the `MBTI_only` premise library for all `16` MBTI targets
+2. run `RQ1` for all `16 * 15 = 240` directed `A -> B` pairs
+3. route pairs using `MBTI` final-type switching only
+4. build the `MBTI_only_strong` premise library
+5. run `RQ2` on routed failed-switch rows
+6. run `RQ3` on routed successful-switch rows
+7. build the full-run report tables
 
-These outputs report:
+The operational details and command templates are documented in:
 
-- self-awareness type match to the active persona
-- dimension-pole match to the active persona
-- agreement with `B_only`
-- residual-A margin relative to the target persona
-- when `--trials-per-sample` is used, summary rows are emitted per `trial_id`
+- `reports/final_run_workflow.md`
+- `reports/final_experiment_scheme.md`
 
-Example runs:
+## Notes
 
-```bash
-python -m src.main --mock --condition B_only --persona-b INFJ --samples-file data/processed/ifeval_starter.jsonl
-python -m src.main --mock --condition B_only --persona-b INTJ --samples-file data/processed/machine_mindset_starter.jsonl
-python -m src.main --mock --condition B_only --persona-b INFJ --samples-file data/processed/ifeval_full.parquet
-python -m src.main --mock --condition B_only --persona-b INTJ --samples-file data/processed/machine_mindset_full.parquet
-```
-
-## RQ2 / RQ3 Workflow
-
-Current scope decision for the project report:
-
-- `RQ1` remains the original MBTI override question and continues to use `data/processed/mbti_questions.csv`
-- `RQ2` is now treated as an **open-ended task analysis**, using `Machine Mindset`
-- `RQ3` is now treated as a **constrained instruction-following analysis**, using `IFEval`
-
-This avoids forcing a single cross-task metric scale across open-ended and constrained tasks.
-
-Recommended execution setup before real runs:
-
-- reuse the existing `RQ1` MBTI results unless you explicitly want new model repeats
-- sample `RQ2` and `RQ3` datasets into stable JSONL files first
-- use `--model-name` to swap providers while keeping the same runner entrypoint
-- use `--trials-per-sample` for repeat runs; downstream summaries are now `trial_id`-aware
-- when `--trials-per-sample > 1`, the runner now disables request caching automatically so repeats stay independent
-
-Create stable sampled files:
-
-```bash
-python scripts/sample_dataset.py --input-file data/processed/machine_mindset_self_awareness_eval.jsonl --output-file data/processed/machine_mindset_self_awareness_sample30.jsonl --sample-ids-output outputs/tables/machine_mindset_self_awareness_sample30_ids.csv --max-samples 30 --seed 42
-python scripts/sample_dataset.py --input-file data/processed/ifeval_full.parquet --output-file data/processed/ifeval_sample30.jsonl --sample-ids-output outputs/tables/ifeval_sample30_ids.csv --max-samples 30 --seed 42
-```
-
-Run the five-condition `RQ2` design on the sampled `Machine Mindset` set:
-
-```bash
-python -m src.main --no-mock --no-resume --condition B_only --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/machine_mindset_self_awareness_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition A_history_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/machine_mindset_self_awareness_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition A_summary_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/machine_mindset_self_awareness_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition B_history_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/machine_mindset_self_awareness_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition B_summary_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/machine_mindset_self_awareness_sample30.jsonl --max-samples 30 --trials-per-sample 3
-```
-
-Score the sampled `Machine Mindset` runs:
-
-```bash
-python scripts/score_machine_mindset_alignment.py --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --eval-samples-file data/processed/machine_mindset_self_awareness_sample30.jsonl
-```
-
-Run the same five-condition design for `RQ3` on sampled `IFEval`:
-
-```bash
-python -m src.main --no-mock --no-resume --condition B_only --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/ifeval_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition A_history_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/ifeval_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition A_summary_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/ifeval_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition B_history_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/ifeval_sample30.jsonl --max-samples 30 --trials-per-sample 3
-python -m src.main --no-mock --no-resume --condition B_summary_to_B --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-5.4 --samples-file data/processed/ifeval_sample30.jsonl --max-samples 30 --trials-per-sample 3
-```
-
-Summarize the `IFEval` switch results:
-
-```bash
-python scripts/summarize_ifeval_switch.py --persona-a ENFJ --persona-b ISTP --model-name openai/gpt-4o-mini --source-dataset ifeval
-```
-
-These scripts write:
-
-- `outputs/tables/*_summary.csv`
-- `outputs/tables/*_selected_runs.csv`
-- `outputs/tables/*_scored.jsonl` for Machine Mindset alignment
-
-Interpretation notes:
-
-- `Machine Mindset`: `OSR` is target-type match, `SCS` is agreement with `B_only`, and `RAI < 0` means the switched run is still closer to target `B` than to persona `A`.
-- `IFEval`: use official-checker-derived `strict_follow_all_rate`, `mean_strict_instruction_fraction`, and their deltas versus `B_only`.
-
-Report-writing note:
-
-- use `MBTI` results as the main evidence for `RQ1`
-- use `Machine Mindset` results as the main evidence for the revised `RQ2`
-- use `IFEval` results as the main evidence for the revised `RQ3`
-- do not treat the current `Machine Mindset` and `IFEval` metrics as perfectly commensurable for a strong cross-task numerical comparison
-
-### IFEval Metadata Rules
-
-For `ifeval`, put rule definitions into `metadata_json.checks` or directly as top-level fields in JSONL/CSV rows.
-When the dataset includes official `instruction_id_list` and `kwargs` fields, the pipeline uses the vendored Google `instruction_following_eval` checker automatically and reports both strict and loose results.
-
-Supported checks:
-
-- `required_substrings`
-- `forbidden_substrings`
-- `required_regexes`
-- `forbidden_regexes`
-- `response_must_start_with`
-- `response_must_end_with`
-- `exact_match`
-- `bullet_count_equals`
-- `line_count_equals`
-- `word_count_equals`
-- `min_word_count`
-- `max_word_count`
-- `sentence_count_equals`
-- `min_sentences`
-- `max_sentences`
-- `must_be_json`
-
-### Machine Mindset Scoring
-
-For `machine_mindset`, scoring uses:
-
-- `reference_answer` or `reference_answers` from metadata
-- optional `expected_keywords`
-
-The scorer reports overlap F1, precision, recall, Jaccard, keyword recall, and a single aggregate score.
-
-## Switching to OpenRouter Later
-
-1. Put your API key in `.env` as `OPENROUTER_API_KEY=...`
-2. Update `configs/models.yaml` if needed
-3. Run without `--mock`
-
-Example:
-
-```bash
-python -m src.main --condition A_history_to_B --persona-a INFJ --persona-b ENTP
-```
-
-## What Exists Now
-
-- runnable mock execution layer on toy data
-- warm-up dialogue generation under persona A
-- deterministic summary-memory placeholder
-- OpenRouter client scaffold with retries
-- request caching and API usage logging
-- scoring skeleton modules with stable interfaces
-
-## Near-Term Extensions
-
-- replace toy samples with real task datasets
-- add model-based summarization
-- add richer automatic scoring and aggregation
-- compare neutral warm-up summaries against persona-conditioned summaries
+- `RQ1` is the only stage that runs on every directed pair.
+- `RQ2` and `RQ3` both reuse premise-library references rather than rerunning `A_only` or `B_only`.
+- `Machine Mindset` and `IFEval` both use the `sample30` evaluation sets in the finalized full run.
+- The vendored `instruction_following_eval` package is the only supported `IFEval` scoring route in the finalized pipeline.
